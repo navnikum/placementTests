@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> split_string(string);
-
 typedef long long ll;
 
 ll modexp(ll base,ll pow1,ll mod)
@@ -89,39 +87,51 @@ int main()
     return 0;
 }
 
-vector<string> split_string(string input_string) {
-    string::iterator new_end = unique(input_string.begin(), input_string.end(), [] (const char &x, const char &y) {
-        return x == y and x == ' ';
-    });
 
-    input_string.erase(new_end, input_string.end());
+// Another DP solution by D Chandak 3 states
+const int mod =  1000000007;
+int dp[2001][2001][2];
 
-    while (input_string[input_string.length() - 1] == ' ') {
-        input_string.pop_back();
-    }
-
-    vector<string> splits;
-    char delimiter = ' ';
-
-    size_t i = 0;
-    size_t pos = input_string.find(delimiter);
-
-    while (pos != string::npos) {
-        splits.push_back(input_string.substr(i, pos - i));
-
-        i = pos + 1;
-        pos = input_string.find(delimiter, i);
-    }
-
-    splits.push_back(input_string.substr(i, min(pos, input_string.length()) - i + 1));
-
-    return splits;
+int rec(int one, int two, int ban)
+{
+    if(one==0 && two==0)
+        return 1;
+    int& ret=dp[one][two][ban];
+    if(ret!=-1)
+        return ret;
+    ret=0;
+    if(one>0)
+        ret=(ret+1LL*rec(one-1, two, 0)*(one-ban))%mod;
+    if(two>0)
+        ret=(ret+1LL*rec(one+1, two-1, 1)*two)%mod;
+    return ret;
 }
 
+int beautifulPermutations(vector<int> arr) {
+   memset(dp,-1,sizeof dp);
+    
+   int one=0,two=0;
+   unordered_map<int, int> hash;
+   for(int i=0;i<arr.size();++i)
+        hash[arr[i]]++;
+
+    unordered_map<int, int>:: iterator it ;
+    for(it = hash.begin(); it!=hash.end(); ++it)
+    {
+        if(it->second == 2)
+            ++two;
+        else 
+            ++one;
+    }
+
+    return rec(one,two,0);
+
+  }
 
 
 
-// DP
+// DP  by author
+  
 #include <bits/stdc++.h>  
 using namespace std ;
 
@@ -201,3 +211,7 @@ int main() {
     }
     return 0;
 }
+
+
+
+
